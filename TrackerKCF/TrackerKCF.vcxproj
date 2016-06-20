@@ -78,10 +78,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="piotr_fhog\fhog.hpp" />
+    <ClInclude Include="piotr_fhog\gradientMex.h" />
+    <ClInclude Include="piotr_fhog\sse.hpp" />
+    <ClInclude Include="piotr_fhog\wrappers.hpp" />
     <ClInclude Include="TrackerKCF.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="piotr_fhog\gradientMex.cpp" />
     <ClCompile Include="TrackerKCF.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

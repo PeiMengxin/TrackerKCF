@@ -25,7 +25,7 @@ bool TrackerKCF::init(cv::Mat &image, cv::Rect &box)
 	peakSize = Size(9, 9);
 
 	kernel.type = Kernel::GAUSSIAN;
-	feature.type = Feature::HOG;
+	feature.type = Feature::FHOG;
 
 	interp_factor = 0.02;
 
@@ -164,13 +164,13 @@ void TrackerKCF::train(cv::Mat &img)
 	Mat patch = getPatch(img);
 	Mat temp;
 
-	getHOGFeature(patch);
+	getFeature(patch);
 
 	if (xfMat.size() > 0)
 	{
 		xfMat.clear();
 	}
-	for (int k = 0; k < hogFeature.blockFeatureNumber; k++)
+	for (size_t k = 0; k < hogMat.size(); k++)
 	{
 		cv::Mat hog_dft;
 		dft(hogMat[k], hog_dft, DFT_COMPLEX_OUTPUT);
@@ -203,7 +203,7 @@ void TrackerKCF::train(cv::Mat &img)
 		{
 			model_xfMat.clear();
 		}
-		for (int k = 0; k < hogFeature.blockFeatureNumber; k++)
+		for (size_t k = 0; k < xfMat.size(); k++)
 		{
 			Mat ttt;
 			xfMat[k].copyTo(ttt);
@@ -214,7 +214,7 @@ void TrackerKCF::train(cv::Mat &img)
 	{
 		model_alphaf = (1 - interp_factor) * model_alphaf + interp_factor * alphaf;
 
-		for (int k = 0; k < hogFeature.blockFeatureNumber; k++)
+		for (size_t k = 0; k < xfMat.size(); k++)
 		{
 			model_xfMat[k] = (1 - interp_factor) * model_xfMat[k] + interp_factor * xfMat[k];
 		}
@@ -229,15 +229,14 @@ void TrackerKCF::detect(cv::Mat &img)
 {
 	Mat patch = getPatch(img);
 
-
-	getHOGFeature(patch);
+	getFeature(patch);
 
 	if (zfMat.size() > 0)
 	{
 		zfMat.clear();
 	}
 
-	for (int k = 0; k < hogFeature.blockFeatureNumber; k++)
+	for (int k = 0; k < hogMat.size(); k++)
 	{
 		cv::Mat hog_dft;
 		dft(hogMat[k], hog_dft, DFT_COMPLEX_OUTPUT);
@@ -349,6 +348,11 @@ cv::Mat TrackerKCF::getFeature(cv::Mat img)
 			getHOGFeature(img);
 			break;
 		}
+		case Feature::FHOG:
+		{
+			getFHOGFeature(img);
+			break;
+		}
 		case Feature::GRAY:
 		{
 			dst.convertTo(dst, CV_32FC1);
@@ -401,6 +405,22 @@ void TrackerKCF::getHOGFeature(cv::Mat img)
 			hogMat[k] = cos_window.mul(hogMat[k]);
 		}
 	}
+}
+
+void TrackerKCF::getFHOGFeature(cv::Mat img)
+{
+	Mat temp;
+	img.convertTo(temp, CV_32FC1);
+	hogMat = p_fhog.extract(temp, 1, cell_size, 9);
+
+	if (cos_window.data)
+	{
+		for (size_t k = 0; k < hogMat.size(); k++)
+		{
+			hogMat[k] = cos_window.mul(hogMat[k]);
+		}
+	}
+
 }
 
 cv::Mat TrackerKCF::kernelCorrelate(cv::Mat m1, cv::Mat m2)
@@ -505,7 +525,7 @@ cv::Mat TrackerKCF::gaussianCorrelation(std::vector<Mat> m1, std::vector<Mat> m2
 	static Mat m12;
 	Mat m12s(m1[0].rows, m1[0].cols, CV_32FC1, Scalar(0));
 
-	for (int i = 0; i < hogFeature.blockFeatureNumber; i++)
+	for (size_t i = 0; i < m1.size(); i++)
 	{
 		mm1 += m1[i].dot(m1[i]);
 		mm2 += m2[i].dot(m2[i]);

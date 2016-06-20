@@ -18,12 +18,27 @@
     <ClInclude Include="TrackerKCF.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="piotr_fhog\fhog.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="piotr_fhog\gradientMex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="piotr_fhog\sse.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="piotr_fhog\wrappers.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TrackerKCF.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="piotr_fhog\gradientMex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

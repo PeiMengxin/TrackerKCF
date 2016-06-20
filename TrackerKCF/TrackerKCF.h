@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "piotr_fhog/fhog.hpp"
 
 struct Kernel
 {
@@ -26,6 +27,7 @@ struct Feature
 	enum FeatureType
 	{
 		HOG = 1,
+		FHOG,
 		GRAY
 	};
 
@@ -67,6 +69,8 @@ private:
 	cv::HOGDescriptor hogDescriptor;
 	HOGFeature hogFeature;
 	std::vector<cv::Mat> hogMat;
+
+	FHoG p_fhog;
 
 	size_t frame;
 	bool isResize;
@@ -116,6 +120,7 @@ private:
 	cv::Mat getPatch(cv::Mat &img);
 	cv::Mat getFeature(cv::Mat img);
 	void getHOGFeature(cv::Mat img);
+	void getFHOGFeature(cv::Mat img);
 
 	cv::Mat kernelCorrelate(cv::Mat m1, cv::Mat m2);
 	cv::Mat kernelCorrelate(std::vector<cv::Mat> m1, std::vector<cv::Mat> m2);
